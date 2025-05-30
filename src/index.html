@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <title>Translation Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-actions">
+        <h1>Translation Manager</h1>
+        <button id="helpBtn" class="help-button">Help</button>
+        <button id="switchLanguageBtn" class="language-switch-button">English</button>
+      </div>
+      <div class="folder-controls">
+        <button id="selectFolderBtn">Select Folder</button>
+        <div class="dropdown">
+          <button id="recentFoldersBtn">Recent Folders ▼</button>
+          <div id="recentFoldersDropdown" class="dropdown-content">
+            <!-- Se llenará con JavaScript -->
+          </div>
+        </div>
+      </div>
+      <div id="currentFolder"></div>
+    </header>
+
+    <div class="controls-bar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search translations...">
+      </div>
+      <div class="add-translation">
+        <button id="addTranslationBtn">Add New Translation</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div id="translationsTable">
+        <div class="select-message">Select a translations folder to begin</div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="language-controls">
+        <input type="text" id="newLanguage" placeholder="New language code">
+        <button id="addLanguageBtn">Add Language</button>
+      </div>
+      <button id="saveBtn" disabled>Save Changes</button>
+      <span id="statusMessage"></span>
+    </footer>
+  </div>
+
+  <!-- Modal para añadir nueva traducción -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Add New Translation</h2>
+
+      <div class="form-group">
+        <label for="parentKeySelect">Add to section:</label>
+        <select id="parentKeySelect">
+          <option value="">Root level</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="newKey">Key name:</label>
+        <input type="text" id="newKey" placeholder="Enter key name">
+      </div>
+
+      <div id="newTranslationValues"></div>
+
+      <div class="form-actions">
+        <button id="confirmAddBtn">Add Translation</button>
+        <button id="cancelAddBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de ayuda -->
+  <div id="helpModal" class="modal help-modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="help-tabs">
+        <button class="tab-button active" data-tab="es">Español</button>
+        <button class="tab-button" data-tab="en">English</button>
+      </div>
+      <div class="tab-contents">
+        <div id="tab-es" class="tab-content active">
+          <p>Cargando contenido de ayuda...</p>
+        </div>
+        <div id="tab-en" class="tab-content">
+          <p>Loading help content...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,1005 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #333;
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 15px;
+}
+
+header h1 {
+  margin-bottom: 10px;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.folder-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#currentFolder {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #ccc;
+}
+
+.controls-bar {
+  display: flex;
+  padding: 10px 15px;
+  background-color: #ecf0f1;
+  border-bottom: 1px solid #ddd;
+}
+
+.search-box {
+  flex: 1;
+  margin-right: 15px;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.main-content {
+  flex: 1;
+  overflow: auto;
+}
+
+#translationsTable {
+  width: 100%;
+}
+
+.translation-row {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+}
+
+.header-row {
+  position: sticky;
+  top: 0;
+  background-color: #34495e;
+  color: white;
+  z-index: 10;
+}
+
+.header-row .translation-key-cell {
+  background-color: #34495e;
+  color: white;
+  margin-left: 35px;
+}
+
+.header-row .translation-values-container {
+  background-color: #34495e;
+}
+
+.header-row .translation-value-cell {
+  background-color: #34495e;
+  color: white;
+  font-weight: bold;
+  border-right-color: #455d7a;
+}
+
+.translation-row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.translation-row:hover {
+  background-color: #ecf0f1;
+}
+
+.translation-key-cell {
+  width: 250px;
+  min-width: 250px;
+  flex-shrink: 0;
+  padding: 10px 15px;
+  font-weight: bold;
+  background-color: transparent;
+  border-right: 1px solid rgba(221, 221, 221, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+}
+
+.translation-values-container {
+  display: flex;
+  flex: 1;
+  overflow-x: auto;
+  background-color: inherit;
+}
+
+.translation-value-cell {
+  flex: 1;
+  min-width: 150px;
+  padding: 5px 10px;
+  border-right: 1px solid rgba(221, 221, 221, 0.3);
+  background-color: inherit;
+}
+
+.translation-value-cell:last-child {
+  border-right: none;
+}
+
+.translation-value-cell input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.translation-value-cell input:focus {
+  outline: 2px solid #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.translation-key-cell:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  white-space: normal;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  z-index: 50;
+  max-width: 400px;
+  word-break: break-all;
+  pointer-events: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  display: none;
+}
+
+.translation-key-cell.truncated:hover::after {
+  display: block;
+}
+
+.group-key:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  white-space: normal;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  z-index: 50;
+  max-width: 400px;
+  word-break: break-all;
+  pointer-events: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  display: none;
+}
+
+.group-key.truncated:hover::after {
+  display: block;
+}
+
+/* Group row styling - combined and improved */
+.group-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #d6e9f8;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+}
+
+/* Restore proper styling for group-key */
+.group-key {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 12px 15px 12px 20px;
+  border-left: 3px solid #e74c3c;
+  margin-left: 10px;
+}
+
+.group-key:hover {
+  background-color: #c5d9f0;
+}
+
+/* Restore nested-keys styling - important to maintain hierarchy */
+.nested-keys {
+  padding-left: 20px;
+  border-left: 3px solid #3498db;
+  margin-left: 10px;
+}
+
+/* Style group actions area */
+.group-actions {
+  display: flex;
+  padding-right: 15px;
+}
+
+/* Style the add button to match other buttons */
+.add-to-group-btn {
+  padding: 5px 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.add-to-group-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Make the button less prominent until hover */
+.group-row .add-to-group-btn {
+  opacity: 0.8;
+  transform: scale(0.9);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.group-row:hover .add-to-group-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Remove these as they won't be needed anymore */
+.group-row .translation-values-container {
+  /* This will be removed since we're not using translation-values-container in group rows */
+  display: none;
+}
+
+.group-row .translation-value-cell {
+  /* This will be removed since we're not using translation-value-cells in group rows */
+  display: none;
+}
+
+footer {
+  padding: 15px;
+  background-color: #ecf0f1;
+  border-top: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+.language-controls {
+  display: flex;
+  margin-right: 20px;
+}
+
+#newLanguage {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+}
+
+#addLanguageBtn {
+  border-radius: 0 4px 4px 0;
+}
+
+/* Dropdown styles */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 250px;
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 20;
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+.folder-item {
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #000;
+}
+
+.folder-item:hover {
+  background-color: #ddd;
+}
+
+#recentFoldersBtn {
+  background-color: #2980b9;
+}
+
+#saveBtn {
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+#saveBtn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* Estilos para mensajes de estado */
+#statusMessage {
+  margin-left: 15px;
+  transition: opacity 0.5s ease;
+}
+
+.success-message {
+  color: #27ae60;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.select-message {
+  color: #7f8c8d;
+  text-align: center;
+  margin-top: 50px;
+  padding: 20px;
+  font-style: italic;
+  font-size: 16px;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 5px;
+  width: 60%;
+  max-width: 60%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Estilo estándar para botones de cierre en modales */
+.modal .close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.modal .close:hover {
+  color: #000;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Asegurar que todas las variantes de botones de cierre usen el mismo estilo */
+.multi-edit-close, .popover-close {
+  font-size: 24px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.multi-edit-close:hover, .popover-close:hover {
+  color: #000;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-actions {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.form-actions button {
+  margin-left: 10px;
+}
+
+#confirmAddBtn {
+  background-color: #27ae60;
+}
+
+#cancelAddBtn {
+  background-color: #e74c3c;
+}
+
+.new-translation-entry {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.new-translation-entry label {
+  width: 100px;
+  font-weight: bold;
+}
+
+.new-translation-entry input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.expandable-icon {
+  margin-right: 8px;
+  display: inline-block;
+  width: 16px;
+  text-align: center;
+}
+
+/* Help documentation styles */
+.help-button {
+  background-color: #3498db;
+  margin-left: 10px;
+}
+
+/* Modal de ayuda mejorado y centrado */
+.help-modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+
+  /* Usar flexbox para centrar perfectamente */
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  /* Añadir animación al abrir */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.help-modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.help-modal .modal-content {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  width: 70%;
+  max-width: 900px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 30px;
+
+  /* Añadir animación de entrada */
+  transform: translateY(20px);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Scroll más suave */
+  scroll-behavior: smooth;
+}
+
+.help-modal.show .modal-content {
+  transform: translateY(0);
+}
+
+/* Mejorar botón de cerrar */
+.help-modal .close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 28px;
+  color: #555;
+  background: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+
+.help-modal .close:hover {
+  transform: rotate(90deg);
+  color: #e74c3c;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  background-color: #f5f5f5;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+  margin-right: 5px;
+}
+
+.tab-button:hover {
+  background-color: #e9e9e9;
+}
+
+.tab-button.active {
+  background-color: white;
+  border-bottom: 2px solid #3498db;
+  color: #3498db;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.help-section {
+  margin-bottom: 25px;
+}
+
+.help-section h3 {
+  color: #3498db;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.help-section p {
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.help-section ol, .help-section ul {
+  padding-left: 25px;
+  margin-bottom: 15px;
+}
+
+.help-section li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.help-section code {
+  background-color: #f5f5f5;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.tip {
+  background-color: #eafaf1;
+  border-left: 4px solid #2ecc71;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+/* For expanded in-place editing */
+.translation-value-cell.editing {
+  z-index: 50;
+  overflow: visible;
+}
+
+.expanded-input {
+  position: absolute;
+  width: 250px;
+  min-height: 100px;
+  max-height: 300px;
+  padding: 8px;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  z-index: 50;
+  left: 0;
+  top: 0;
+  font-family: inherit;
+  font-size: inherit;
+  resize: vertical;
+}
+
+.language-switch-button {
+  background-color: #f39c12;
+  margin-left: 10px;
+  transition: all 0.3s;
+}
+
+.language-switch-button:hover {
+  background-color: #e67e22;
+}
+
+/* Popover elegante para edición */
+.edit-popover {
+  position: fixed;
+  z-index: 1000;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.edit-popover.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Agregamos flechita (triángulo) para indicar de qué celda viene */
+.edit-popover.position-bottom::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid white;
+  filter: drop-shadow(0 -2px 2px rgba(0,0,0,0.1));
+}
+
+.edit-popover.position-top::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.lang-label {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 14px;
+}
+
+.popover-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #777;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.popover-close:hover {
+  background: rgba(0,0,0,0.05);
+  color: #333;
+}
+
+.edit-area {
+  min-height: 120px;
+  padding: 15px;
+  border: none;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-area:focus {
+  outline: none;
+}
+
+.popover-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 15px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.popover-actions button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.save-edit {
+  background-color: #27ae60;
+}
+
+.save-edit:hover {
+  background-color: #219653;
+}
+
+.cancel-edit {
+  background-color: #95a5a6;
+}
+
+.cancel-edit:hover {
+  background-color: #7f8c8d;
+}
+
+/* Estilo para la celda de clave con indicador de edición */
+.translation-key-cell {
+  position: relative;
+  cursor: pointer;
+}
+
+.edit-all-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 14px;
+}
+
+.translation-key-cell:hover .edit-all-icon {
+  opacity: 0.7;
+}
+
+/* Modal de edición múltiple - Corregido */
+.multi-edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.multi-edit-modal.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Este es el contenedor interno que faltaba */
+.multi-edit-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  width: 80%;
+  max-width: 1000px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.multi-edit-modal.visible .multi-edit-content {
+  transform: translateY(0);
+}
+
+.multi-edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.multi-edit-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.multi-edit-container {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 60vh; /* Asegurar que no sea demasiado grande */
+}
+
+.multi-edit-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  margin-bottom: 5px;
+}
+
+.multi-edit-lang {
+  margin-bottom: 20px;
+}
+
+.multi-edit-lang-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.multi-edit-lang-label {
+  font-weight: bold;
+  color: #3498db;
+}
+
+.translate-from-es {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.translate-from-es:hover {
+  background-color: #2980b9;
+}
+
+.translate-from-es:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.multi-edit-textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.multi-edit-actions {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+}
+
+.multi-edit-actions button {
+  margin-left: 10px;
+  padding: 10px 15px;
+}
+
+.multi-edit-save {
+  background-color: #27ae60;
+}
+
+.multi-edit-save:hover {
+  background-color: #219653;
+}
+
+.multi-edit-cancel {
+  background-color: #95a5a6;
+}
+
+.multi-edit-cancel:hover {
+  background-color: #7f8c8d;
+}
