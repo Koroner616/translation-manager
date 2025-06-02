@@ -36,14 +36,6 @@ npm run build
 
 MIT
 ```
-
-Después incluyes este archivo en tu commit inicial:
-
-```bash
-git add README.md
-git commit -m "Add README"
-```
-
 O simplemente lo incluyes en el commit inicial junto con todos los demás archivos:
 
 ```bash
