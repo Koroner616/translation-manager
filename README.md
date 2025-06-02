@@ -20,24 +20,19 @@ git clone https://github.com/Koroner616/translation-manager.git
 cd translation-manager
 
 # Install dependencies
-npm install
+yarn install
 
 # Start the application
-npm start
+yarn start
 ```
 
 ## Building for Linux
 
 ```bash
-npm run build
+yarn build
 ```
 
 ## License
 
 MIT
 ```
-O simplemente lo incluyes en el commit inicial junto con todos los demás archivos:
-
-```bash
-git add .
-git commit -m "Initial commit"
