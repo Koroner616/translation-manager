@@ -15,19 +15,41 @@ A tool for managing translation files in multiple languages.
 ```bash
 # Clone the repository
 git clone https://github.com/Koroner616/translation-manager.git
+```
 
+```bash
 # Navigate to the project directory
 cd translation-manager
+```
 
+```bash
 # Install dependencies
 yarn install
+```
 
+```bash
 # Start the application
 yarn start
 ```
 
-## Building for Linux
+## Building
 
+### Linux
+```bash
+yarn build:linux
+```
+
+### Windows
+```bash
+yarn build:win
+```
+
+### macOS
+```bash
+yarn build:mac
+```
+
+### All platforms
 ```bash
 yarn build
 ```
@@ -35,4 +57,3 @@ yarn build
 ## License
 
 MIT
-```
