@@ -90,7 +90,7 @@ header h1 {
 .header-row .translation-key-cell {
   background-color: #34495e;
   color: white;
-  margin-left: 35px;
+  margin-left: 0; /* Quitar el margin que causa desalineación */
 }
 
 .header-row .translation-values-container {
@@ -114,7 +114,8 @@ header h1 {
 
 .translation-key-cell {
   width: 250px;
-  min-width: 250px;
+  min-width: 100px;
+  max-width: 500px;
   flex-shrink: 0;
   padding: 10px 15px;
   font-weight: bold;
@@ -126,6 +127,70 @@ header h1 {
   position: relative;
 }
 
+/* Mejorar la detección del cursor */
+.header-row .translation-key-cell,
+.header-row .translation-value-cell {
+  position: relative;
+}
+
+/* Solo la primera columna tiene handle de redimensionamiento */
+.header-row .translation-key-cell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -2px;
+  width: 8px;
+  height: 100%;
+  background: transparent;
+  cursor: col-resize;
+  z-index: 25;
+}
+
+/* Indicador visual en hover para la primera columna */
+.header-row .translation-key-cell:hover::after {
+  background-color: rgba(52, 152, 219, 0.3);
+}
+
+/* Eliminar handles de las columnas de idiomas */
+.header-row .translation-value-cell::after {
+  display: none;
+}
+
+/* Asegurar que la primera columna tenga prioridad */
+.header-row .translation-key-cell {
+  position: relative;
+  z-index: 20;
+}
+
+/* Ocultar en la última columna */
+.header-row .translation-value-cell:last-child::after {
+  display: none;
+}
+
+/* Clase para indicar que se está redimensionando */
+.resizing-table {
+  user-select: none;
+}
+
+.resizing-table * {
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Asegurar que group-key no se vea afectado */
+.group-key {
+  width: auto !important;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 12px 15px 12px 20px;
+  border-left: 3px solid #e74c3c;
+  margin-left: 10px;
+}
+
+/* Asegurar que las celdas de valor se ajusten */
 .translation-values-container {
   display: flex;
   flex: 1;
@@ -135,10 +200,29 @@ header h1 {
 
 .translation-value-cell {
   flex: 1;
-  min-width: 150px;
+  min-width: 120px; /* Reducir un poco el mínimo */
+  max-width: 400px; /* Añadir máximo */
   padding: 5px 10px;
   border-right: 1px solid rgba(221, 221, 221, 0.3);
   background-color: inherit;
+  position: relative;
+}
+
+/* Handle para columnas de valores */
+.translation-value-cell .resize-handle {
+  right: -2px;
+  width: 4px;
+}
+
+/* Clase para indicar que se está redimensionando */
+.resizing-column {
+  user-select: none;
+  pointer-events: none;
+}
+
+.resizing-column * {
+  user-select: none;
+  pointer-events: none;
 }
 
 .translation-value-cell:last-child {
@@ -207,7 +291,7 @@ header h1 {
   display: block;
 }
 
-/* Group row styling - combined and improved */
+/* Group row styling - asegurar que ocupe todo el ancho */
 .group-row {
   display: flex;
   justify-content: space-between;
@@ -217,9 +301,9 @@ header h1 {
   width: 100%;
 }
 
-/* Restore proper styling for group-key */
+/* Asegurar que group-key ocupe todo el espacio disponible */
 .group-key {
-  flex-grow: 1;
+  flex: 1; /* Cambiar de flex-grow: 1 a flex: 1 */
   display: flex;
   align-items: center;
   font-weight: bold;
@@ -227,63 +311,26 @@ header h1 {
   padding: 12px 15px 12px 20px;
   border-left: 3px solid #e74c3c;
   margin-left: 10px;
+  min-width: 0; /* Añadir esta línea */
 }
 
-.group-key:hover {
-  background-color: #c5d9f0;
-}
-
-/* Restore nested-keys styling - important to maintain hierarchy */
-.nested-keys {
-  padding-left: 20px;
-  border-left: 3px solid #3498db;
-  margin-left: 10px;
-}
-
-/* Style group actions area */
+/* Asegurar que group-actions no se encoja */
 .group-actions {
   display: flex;
   padding-right: 15px;
+  flex-shrink: 0; /* Añadir esta línea */
 }
 
-/* Style the add button to match other buttons */
-.add-to-group-btn {
-  padding: 5px 10px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.2s;
-}
-
-.add-to-group-btn:hover {
-  background-color: #2980b9;
-}
-
-/* Make the button less prominent until hover */
-.group-row .add-to-group-btn {
-  opacity: 0.8;
-  transform: scale(0.9);
-  transition: opacity 0.2s, transform 0.2s;
-}
-
-.group-row:hover .add-to-group-btn {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Remove these as they won't be needed anymore */
+/* Eliminar o comentar estas reglas que pueden estar causando conflictos */
+/*
 .group-row .translation-values-container {
-  /* This will be removed since we're not using translation-values-container in group rows */
   display: none;
 }
 
 .group-row .translation-value-cell {
-  /* This will be removed since we're not using translation-value-cells in group rows */
   display: none;
 }
+*/
 
 footer {
   padding: 15px;
@@ -1002,4 +1049,108 @@ button:hover {
 
 .multi-edit-cancel:hover {
   background-color: #7f8c8d;
+}
+
+/* Estilos para elementos deshabilitados */
+button:disabled {
+  background-color: #95a5a6 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  color: #fff !important;
+}
+
+button:disabled:hover {
+  background-color: #95a5a6 !important;
+  transform: none;
+}
+
+input:disabled {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  border-color: #dee2e6 !important;
+}
+
+input:disabled::placeholder {
+  color: #adb5bd !important;
+}
+
+/* Estilos específicos para mantener la consistencia */
+#saveBtn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+#addTranslationBtn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+#addLanguageBtn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+#searchInput:disabled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+#newLanguage:disabled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Asegurar que los botones deshabilitados no cambien en hover */
+button:disabled:hover {
+  background-color: #95a5a6;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Anular el width fijo para group-key específicamente */
+.translation-row.group-row .translation-key-cell.group-key {
+  width: auto !important;
+  max-width: none !important;
+  flex: 1 !important;
+  min-width: 0;
+}
+
+/* Asegurar que el group-row use flexbox correctamente */
+.translation-row.group-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #d6e9f8;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+}
+
+/* Asegurar que group-actions no se encoja */
+.translation-row.group-row .group-actions {
+  display: flex;
+  padding-right: 15px;
+  flex-shrink: 0;
+}
+
+/* Estilo base para group-key (mantener los estilos existentes) */
+.group-key {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 12px 15px 12px 20px;
+  border-left: 3px solid #e74c3c;
+  margin-left: 10px;
+}
+
+.group-key:hover {
+  background-color: #c5d9f0;
 }

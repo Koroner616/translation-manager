@@ -15,37 +15,45 @@ A tool for managing translation files in multiple languages.
 ```bash
 # Clone the repository
 git clone https://github.com/Koroner616/translation-manager.git
-
-# Navigate to the project directory
-cd translation-manager
-
-# Install dependencies
-npm install
-
-# Start the application
-npm start
 ```
 
-## Building for Linux
+```bash
+# Navigate to the project directory
+cd translation-manager
+```
 
 ```bash
-npm run build
+# Install dependencies
+yarn install
+```
+
+```bash
+# Start the application
+yarn start
+```
+
+## Building
+
+### Linux
+```bash
+yarn build:linux
+```
+
+### Windows
+```bash
+yarn build:win
+```
+
+### macOS
+```bash
+yarn build:mac
+```
+
+### All platforms
+```bash
+yarn build
 ```
 
 ## License
 
 MIT
-```
-
-Después incluyes este archivo en tu commit inicial:
-
-```bash
-git add README.md
-git commit -m "Add README"
-```
-
-O simplemente lo incluyes en el commit inicial junto con todos los demás archivos:
-
-```bash
-git add .
-git commit -m "Initial commit"

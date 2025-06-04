@@ -1,6 +1,50 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
-const fs = require('fs-extra');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const fs = require('fs-extra'); // Asegúrate de usar fs-extra, no fs nativo
+
+// Determina si la app está empaquetada o en desarrollo
+const isPackaged = app.isPackaged;
+
+// Obtiene la ruta base de la aplicación
+function getBasePath() {
+  if (!isPackaged) {
+    return __dirname; // En desarrollo, usa __dirname
+  }
+
+  // En producción
+  if (process.platform === 'linux') {
+    // En Linux, primero intenta con el directorio estándar
+    const linuxPath = '/opt/Translation Manager';
+    if (fs.existsSync(linuxPath)) {
+      return linuxPath;
+    }
+  }
+
+  // Para otros sistemas o como fallback
+  return path.dirname(app.getPath('exe'));
+}
+
+const basePath = getBasePath();
+
+// Función para resolver rutas relativas al directorio de la app
+function resolveAppPath(relativePath) {
+  // En producción, no necesitamos prefijar con 'src/' para archivos en src
+  if (isPackaged) {
+    // Si la ruta ya incluye 'src/', no la modifiques
+    if (relativePath.startsWith('src/')) {
+      return path.join(app.getAppPath(), relativePath);
+    }
+
+    // Para assets y otros directorios en la raíz
+    return path.join(app.getAppPath(), relativePath);
+  }
+
+  // En desarrollo, usar __dirname
+  return path.join(__dirname, relativePath);
+}
+
+// Añade un log para depuración
+console.log('Base application path:', basePath);
 
 // Configuración para almacenar las carpetas recientes
 const userDataPath = app.getPath('userData');
@@ -34,27 +78,40 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
+    autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(app.getAppPath(), 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false
     }
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
-  
-  // Descomentar esta línea para abrir DevTools automáticamente
-  // mainWindow.webContents.openDevTools();
+  // Cargar index.html desde la ruta correcta
+  mainWindow.loadFile(path.join(app.getAppPath(), 'src', 'index.html'));
 }
 
 app.whenReady().then(() => {
+  console.log('App Path:', app.getAppPath());
+
+  // Verificar existencia de archivos/directorios clave
+  const paths = [
+    '',
+    'src',
+    'src/index.html',
+    'assets',
+    'assets/translations',
+    'preload.js'
+  ];
+
+  paths.forEach(p => {
+    const fullPath = path.join(app.getAppPath(), p);
+    console.log(`Path ${fullPath} exists: ${fs.existsSync(fullPath)}`);
+  });
+
   // Verificar permisos y acceso a directorios importantes
   const appDir = app.getAppPath();
-  const assetsDir = path.join(appDir, 'assets');
-
   console.log('App directory:', appDir);
   console.log('User data directory:', userDataPath);
-  console.log('Assets directory exists:', fs.existsSync(assetsDir));
 
   try {
     const testFile = path.join(userDataPath, 'write-test.txt');
@@ -81,11 +138,11 @@ ipcMain.handle('select-folder', async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory']
   });
-  
+
   if (result.canceled) {
     return { canceled: true };
   }
-  
+
   const folderPath = result.filePaths[0];
 
   // Guardar en carpetas recientes
@@ -173,18 +230,18 @@ ipcMain.handle('save-translation-alt', async (event, { folderPath, lang, data })
     const filePath = path.join(folderPath, `${lang}.json`);
     console.log(`[SAVE-ALT] Full path: ${filePath}`);
 
-    // Usar el módulo fs nativo
-    const fs = require('fs');
+    // Usar el módulo fs nativo con un nombre diferente para evitar conflictos
+    const fsNative = require('fs');
 
     // Convertir el objeto a JSON con formato
     const jsonContent = JSON.stringify(data, null, 2);
 
     // Escribir el archivo de forma síncrona
-    fs.writeFileSync(filePath, jsonContent, 'utf8');
+    fsNative.writeFileSync(filePath, jsonContent, 'utf8');
 
     // Verificar que se escribió
-    if (fs.existsSync(filePath)) {
-      const stats = fs.statSync(filePath);
+    if (fsNative.existsSync(filePath)) {
+      const stats = fsNative.statSync(filePath);
       console.log(`[SAVE-ALT] File saved successfully. Size: ${stats.size} bytes`);
       return { success: true };
     } else {
@@ -199,7 +256,7 @@ ipcMain.handle('save-translation-alt', async (event, { folderPath, lang, data })
 // Añade a las funciones disponibles en ipcMain
 ipcMain.handle('get-available-ui-languages', async () => {
   try {
-    const translationsDir = path.join(__dirname, 'assets', 'translations');
+    const translationsDir = resolveAppPath('assets/translations');
     const files = await fs.readdir(translationsDir);
     // Filtrar solo archivos JSON y extraer el código de idioma del nombre del archivo
     const languages = files
@@ -214,13 +271,11 @@ ipcMain.handle('get-available-ui-languages', async () => {
 // Añade estos manejadores IPC
 ipcMain.handle('load-ui-translation', async (event, lang) => {
   try {
-    const filePath = path.join(__dirname, 'assets', 'translations', `${lang}.json`);
-
+    const filePath = resolveAppPath(`assets/translations/${lang}.json`);
     if (!fs.existsSync(filePath)) {
       console.log(`Translation file not found: ${filePath}`);
       return { success: false, error: 'Translation file not found' };
     }
-
     const data = await fs.readJson(filePath);
     return { success: true, data };
   } catch (error) {
@@ -231,13 +286,11 @@ ipcMain.handle('load-ui-translation', async (event, lang) => {
 
 ipcMain.handle('load-help-content', async (event, lang) => {
   try {
-    const filePath = path.join(__dirname, 'assets', 'help', `${lang}.html`);
-
+    const filePath = resolveAppPath(`assets/help/${lang}.html`);
     if (!fs.existsSync(filePath)) {
       console.log(`Help file not found: ${filePath}`);
       return { success: false, error: 'Help file not found' };
     }
-
     const data = await fs.readFile(filePath, 'utf8');
     return { success: true, data };
   } catch (error) {
